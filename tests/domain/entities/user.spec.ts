@@ -16,10 +16,10 @@ describe('User Entity Unit Tests', () => {
     expect(user).toBeInstanceOf(User.Entity)
     expect(user.id).toBeDefined()
     expect(user.created_at).toBeDefined()
-    expect(user).toEqual(
-      expect.objectContaining({
-        ...userProps,
-      }),
-    )
+    expect(user.full_name).toBe(userProps.full_name)
+    expect(user.email).toBe(userProps.email)
+    expect(user.cpf).toBe(userProps.cpf)
+    expect(user.favorite_color).toBe(userProps.favorite_color)
+    expect(user.observations).toBe(userProps.observations)
   })
 })

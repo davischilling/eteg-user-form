@@ -43,6 +43,10 @@ export namespace User {
       return this.props.full_name
     }
 
+    get cpf() {
+      return this.props.cpf
+    }
+
     get email() {
       return this.props.email
     }

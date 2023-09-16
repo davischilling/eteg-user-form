@@ -1,7 +1,7 @@
 {
   "name": "eteg",
   "version": "1.0.0",
-  "description": "## RFs (Requisitos Funcionais)",
+  "description": "Eteg - John Doe user form request challenge",
   "main": "index.js",
   "scripts": {
     "test": "jest"

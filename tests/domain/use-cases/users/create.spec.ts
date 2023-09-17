@@ -52,17 +52,11 @@ describe('CreateUserUseCase Integration Tests', () => {
   it('should create a user', async () => {
     const user = await sut.handle(userMock)
 
-    expect(user).toEqual(
-      expect.objectContaining({
-        id: expect.any(String),
-        full_name: userMock.full_name,
-        cpf: userMock.cpf,
-        email: userMock.email,
-        favorite_color: userMock.favorite_color,
-        observations: userMock.observations,
-        created_at: expect.any(Date),
-      }),
-    )
+    expect(user).toEqual({
+      ...userMock,
+      id: expect.any(String),
+      created_at: expect.any(Date),
+    })
 
     const userFromDb = await prismaModule.prisma.user.findUnique({
       where: { id: user.id },
@@ -70,7 +64,7 @@ describe('CreateUserUseCase Integration Tests', () => {
 
     expect(userFromDb).toEqual({
       ...user,
-      cpf: new CpfValueObject(user.cpf).value,
+      cpf: new CpfValueObject(user.cpf).getCpfDigits(),
     })
   })
 
@@ -85,7 +79,7 @@ describe('CreateUserUseCase Integration Tests', () => {
     ).rejects.toThrow(new UserAlreadyExistsError())
   })
 
-  it('should throw if tries to create a user with an already cpf email', async () => {
+  it('should throw if tries to create a user with an already used cpf', async () => {
     await sut.handle(userMock)
 
     await expect(

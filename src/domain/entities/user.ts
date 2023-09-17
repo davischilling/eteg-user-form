@@ -35,8 +35,7 @@ export namespace User {
       props: CreateDto,
       private readonly validator: ValidationInterface<Entity>,
     ) {
-      const fmtCpf = new CpfValueObject(props.cpf).value
-      super({ props: { ...props, cpf: fmtCpf } })
+      super({ props })
       this.validate(this.validator, 'User')
     }
 

@@ -35,10 +35,29 @@ describe('UserValidator Integration Tests', () => {
         context: 'User',
         messages: {
           full_name: { _errors: ['Required'] },
-          cpf: { _errors: ['Invalid CPF'] },
+          cpf: { _errors: ['Required'] },
           email: { _errors: ['Required'] },
           favorite_color: { _errors: ['Required'] },
           observations: { _errors: ['Required'] },
+        },
+      }),
+    )
+  })
+
+  it('should throw Invalid CPF if cpf is invalid', () => {
+    expect(() => {
+      new User.Entity(
+        {
+          ...mockedProps,
+          cpf: '000.000.00001',
+        },
+        validator,
+      )
+    }).toThrow(
+      new InvalidFieldError({
+        context: 'User',
+        messages: {
+          cpf: { _errors: ['Invalid CPF'] },
         },
       }),
     )

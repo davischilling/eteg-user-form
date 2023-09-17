@@ -1,14 +1,15 @@
 import fastify from 'fastify'
 import { appRoutes } from './application/routes'
-import { env } from '#/infra/env'
 
 export const app = fastify()
 
 app.register(appRoutes)
 
 app.setErrorHandler((error, _, reply) => {
-  if (env.NODE_ENV !== 'production') {
-    console.error(error)
+  if (error instanceof SyntaxError) {
+    return reply.status(400).send({ message: 'Invalid JSON' })
+  } else if (error.name === 'FastifyError') {
+    return reply.status(400).send({ message: error.message })
   }
   reply.status(500).send({ message: 'Internal server error' })
 })

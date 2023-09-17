@@ -11,8 +11,12 @@ export class PrismaUserRepository
 {
   async create(data: User.Entity): Promise<User.Model> {
     try {
+      const userToCreate: Prisma.UserCreateInput = {
+        ...data.toJSON(),
+        cpf: new CpfValueObject(data.cpf).getCpfDigits(),
+      }
       const user = await prisma.user.create({
-        data: data.toJSON() as Prisma.UserCreateInput,
+        data: userToCreate,
       })
       return {
         ...user,

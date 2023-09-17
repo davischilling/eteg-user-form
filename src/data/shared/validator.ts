@@ -8,15 +8,12 @@ export class Validator<Entity extends AbstractEntity>
 
   validate(entity: Entity, context: string): void {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { id, created_at, ...entityPropsToValidate } = entity
-    const validationResult = this.validationCb(entityPropsToValidate)
-    if (validationResult?.error) {
-      const validationErrors = validationResult.error.details.map(
-        (err: { message: unknown }) => err.message,
-      )
+    const { id, created_at, ...rest } = entity.toJSON()
+    const validationResult = this.validationCb(rest)
+    if (!validationResult.success) {
       entity.errorNotifier.addError({
         context,
-        messages: validationErrors,
+        messages: validationResult.error?.issues,
       })
     }
   }

@@ -1,0 +1,22 @@
+version: '3.9'
+
+services:
+  api-pg:
+    image: bitnami/postgresql
+    container_name: api-pg
+    environment:
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: pg
+    ports:
+      - 5432:5432
+  api-pg-test:
+    image: bitnami/postgresql
+    restart: always
+    container_name: api-pg-test
+    environment:
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: pg-test
+    ports:
+      - 5433:5432

@@ -1,6 +1,10 @@
-import { RepositoryInterface, UsecaseInterface } from '#/domain/contracts'
+import { UsecaseInterface } from '#/domain/contracts'
 import { User } from '#/domain/entities'
 import { UserFactory } from '#/domain/entities/factories'
+
+export interface UserRepositoryInterface<Input, Output> {
+  create(data: Input): Promise<Output>
+}
 
 export namespace CreateUser {
   export type InputDto = User.Props
@@ -8,7 +12,10 @@ export namespace CreateUser {
 
   export class UseCase implements UsecaseInterface<InputDto, OutputDto> {
     constructor(
-      private readonly userRepo: RepositoryInterface<User.Entity, User.Model>,
+      private readonly userRepo: UserRepositoryInterface<
+        User.Entity,
+        User.Model
+      >,
     ) {}
 
     handle(inputDto: InputDto): Promise<User.Model> {

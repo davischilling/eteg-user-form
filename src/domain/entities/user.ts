@@ -1,3 +1,4 @@
+import { CpfValueObject } from '#/data/value-objects'
 import { ValidationInterface } from '#/domain/contracts'
 import { AbstractEntity } from './abstract-entity'
 
@@ -34,7 +35,8 @@ export namespace User {
       props: CreateDto,
       private readonly validator: ValidationInterface<Entity>,
     ) {
-      super({ props })
+      const fmtCpf = new CpfValueObject(props.cpf).value
+      super({ props: { ...props, cpf: fmtCpf } })
       this.validate(this.validator, 'User')
     }
 

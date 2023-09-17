@@ -1,4 +1,6 @@
+import { InvalidFieldError } from '#/data/errors'
 import { Validator } from '#/data/shared'
+import { CpfValueObject } from '#/data/value-objects'
 import { ValidationInterface, ValidationCb } from '#/domain/contracts'
 import { User } from '#/domain/entities'
 
@@ -9,7 +11,7 @@ describe('User Entity Unit Tests', () => {
   let userMock: User.CreateDto
 
   beforeEach(() => {
-    validationCb = jest.fn().mockReturnValue({ error: null })
+    validationCb = jest.fn().mockReturnValue({ success: true })
     validator = new Validator(validationCb)
     validateSpy = jest.spyOn(validator, 'validate')
     userMock = {
@@ -29,7 +31,7 @@ describe('User Entity Unit Tests', () => {
     expect(user.created_at).toBeDefined()
     expect(user.full_name).toBe(userMock.full_name)
     expect(user.email).toBe(userMock.email)
-    expect(user.cpf).toBe(userMock.cpf)
+    expect(user.cpf).toBe(new CpfValueObject(userMock.cpf).value)
     expect(user.favorite_color).toBe(userMock.favorite_color)
     expect(user.observations).toBe(userMock.observations)
   })
@@ -42,7 +44,7 @@ describe('User Entity Unit Tests', () => {
       expect.objectContaining({
         id: expect.any(String),
         full_name: userMock.full_name,
-        cpf: userMock.cpf,
+        cpf: new CpfValueObject(userMock.cpf).value,
         email: userMock.email,
         favorite_color: userMock.favorite_color,
         observations: userMock.observations,
@@ -60,14 +62,20 @@ describe('User Entity Unit Tests', () => {
   it('should throw InvalidFieldError if ValidationCb return errors', () => {
     const error = new Error('Validation error')
     validationCb = jest.fn().mockReturnValue({
+      success: false,
       error: {
-        details: [{ message: error.message }],
+        issues: [error.message],
       },
     })
     validator = new Validator(validationCb)
 
     expect(() => {
       new User.Entity(userMock, validator)
-    }).toThrow('Validation error')
+    }).toThrow(
+      new InvalidFieldError({
+        context: 'User',
+        messages: [error.message],
+      }),
+    )
   })
 })

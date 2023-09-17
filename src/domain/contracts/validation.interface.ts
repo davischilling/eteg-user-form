@@ -3,7 +3,9 @@ export interface ValidationInterface<Entity> {
 }
 
 export type ValidationCb = (entityPropsToValidate: { [x: string]: any }) => {
-  error: any
-  warning?: any
-  value: undefined
+  success: boolean
+  data?: any
+  error?: {
+    issues: string[]
+  }
 }

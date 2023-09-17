@@ -1,6 +1,6 @@
 export type NotificationErrorProps = {
   context: string
-  messages: string[]
+  messages?: any
 }
 
 export interface ErrorNotifierInterface {

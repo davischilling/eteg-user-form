@@ -28,7 +28,9 @@ const config = {
 
   // An array of regexp pattern strings used to skip coverage collection
   coveragePathIgnorePatterns: [
-    "/node_modules/"
+    "/node_modules/",
+    "<rootDir>/src/infra/db/prisma.ts",
+    "<rootDir>/src/infra/env/index.ts"
   ],
 
   // Indicates which provider should be used to instrument code for coverage

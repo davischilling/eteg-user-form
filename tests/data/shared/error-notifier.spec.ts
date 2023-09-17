@@ -12,14 +12,13 @@ describe('ErrorNotifier Unit Tests', () => {
     expect(errorNotifier).toBeTruthy()
     expect(errorNotifier.getErrors()).toEqual({
       context: '',
-      messages: [],
     })
   })
 
   it('should add an error', () => {
     errorNotifier.addError({
       context: 'Test',
-      messages: ['Error message'],
+      messages: { field: 'Error message' },
     })
 
     expect(errorNotifier.hasErrors()).toBe(true)
@@ -28,7 +27,7 @@ describe('ErrorNotifier Unit Tests', () => {
   it('should return true if notification has errors', () => {
     const error = {
       context: 'any_context',
-      messages: ['any_message'],
+      messages: { field: 'Error message' },
     }
 
     errorNotifier.addError(error)
@@ -43,7 +42,10 @@ describe('ErrorNotifier Unit Tests', () => {
   it('should return all errors correctly', () => {
     const errors = {
       context: 'any_context',
-      messages: ['any_message', 'other_message'],
+      messages: {
+        field: 'Error message',
+        field2: 'Error message',
+      },
     }
 
     errorNotifier.addError(errors)

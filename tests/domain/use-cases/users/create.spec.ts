@@ -1,7 +1,8 @@
+import { UserAlreadyExistsError } from '#/data/errors'
 import { CpfValueObject } from '#/data/value-objects'
 import { User } from '#/domain/entities'
 import { CreateUser, UserRepositoryInterface } from '#/domain/use-cases/users'
-import { prisma } from '#/infra/db/prisma'
+import * as prismaModule from '#/infra/db/prisma'
 import { PrismaUserRepository } from '#/infra/db/repositories'
 
 describe('CreateUserUseCase Integration Tests', () => {
@@ -11,8 +12,8 @@ describe('CreateUserUseCase Integration Tests', () => {
   let userMock: CreateUser.InputDto
 
   beforeEach(async () => {
-    const deleteUser = prisma.user.deleteMany()
-    await prisma.$transaction([deleteUser])
+    const deleteUser = prismaModule.prisma.user.deleteMany()
+    await prismaModule.prisma.$transaction([deleteUser])
 
     userMock = {
       full_name: 'John Doe',
@@ -28,7 +29,7 @@ describe('CreateUserUseCase Integration Tests', () => {
   })
 
   afterAll(async () => {
-    await prisma.$disconnect()
+    await prismaModule.prisma.$disconnect()
   })
 
   it('should call userRepo correctly', async () => {
@@ -63,7 +64,7 @@ describe('CreateUserUseCase Integration Tests', () => {
       }),
     )
 
-    const userFromDb = await prisma.user.findUnique({
+    const userFromDb = await prismaModule.prisma.user.findUnique({
       where: { id: user.id },
     })
 
@@ -71,5 +72,35 @@ describe('CreateUserUseCase Integration Tests', () => {
       ...user,
       cpf: new CpfValueObject(user.cpf).value,
     })
+  })
+
+  it('should throw if tries to create a user with an already used email', async () => {
+    await sut.handle(userMock)
+
+    await expect(
+      sut.handle({
+        ...userMock,
+        cpf: '111.111.111-11',
+      }),
+    ).rejects.toThrow(new UserAlreadyExistsError())
+  })
+
+  it('should throw if tries to create a user with an already cpf email', async () => {
+    await sut.handle(userMock)
+
+    await expect(
+      sut.handle({
+        ...userMock,
+        email: 'email@test.com',
+      }),
+    ).rejects.toThrow(new UserAlreadyExistsError())
+  })
+
+  it('should rethrow if userRepo throw something different from PrismaClientKnownRequestError', async () => {
+    const otherError = new Error('Some other error')
+    const prismaMock = jest.spyOn(prismaModule.prisma.user, 'create')
+    prismaMock.mockRejectedValueOnce(otherError)
+
+    await expect(sut.handle(userMock)).rejects.toThrow(otherError)
   })
 })

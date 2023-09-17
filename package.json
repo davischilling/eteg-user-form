@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "test:cov": "jest --coverage"
+    "test:cov": "jest --coverage",
+    "db:push": "prisma db push --preview-feature"
   },
   "keywords": [],
   "author": "",

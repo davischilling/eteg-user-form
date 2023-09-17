@@ -6,7 +6,6 @@ import {
 export class ErrorNotifier implements ErrorNotifierInterface {
   private errors: NotificationErrorProps = {
     context: '',
-    messages: [],
   }
 
   addError(error: NotificationErrorProps): void {
@@ -14,7 +13,7 @@ export class ErrorNotifier implements ErrorNotifierInterface {
   }
 
   hasErrors(): boolean {
-    return this.errors.messages.length > 0
+    return !!this.errors.messages
   }
 
   getErrors(): NotificationErrorProps {

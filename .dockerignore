@@ -1,0 +1,7 @@
+__coverage__/
+.github
+node_modules
+npm-debug.log
+.cache
+*.md
+dbdata

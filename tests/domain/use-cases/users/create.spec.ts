@@ -1,45 +1,51 @@
-import { RepositoryInterface } from '#/domain/contracts'
+import { CpfValueObject } from '#/data/value-objects'
 import { User } from '#/domain/entities'
-import { CreateUser } from '#/domain/use-cases/users'
+import { CreateUser, UserRepositoryInterface } from '#/domain/use-cases/users'
+import { prisma } from '#/infra/db/prisma'
+import { PrismaUserRepository } from '#/infra/db/repositories'
 
-describe('CreateUserUseCase Unit Tests', () => {
-  let userRepo: RepositoryInterface<User.Entity, User.Model>
+describe('CreateUserUseCase Integration Tests', () => {
+  let userRepo: UserRepositoryInterface<User.Entity, User.Model>
+  let userCreateSpy: jest.SpyInstance
   let sut: CreateUser.UseCase
   let userMock: CreateUser.InputDto
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    const deleteUser = prisma.user.deleteMany()
+    await prisma.$transaction([deleteUser])
+
     userMock = {
       full_name: 'John Doe',
       cpf: '000.000.000-00',
       email: 'email@test.com',
       favorite_color: 'red',
-      observations: '',
+      observations: 'Lorem ipsum dolor sit amet',
     }
-    userRepo = {
-      create: jest.fn().mockResolvedValue({
-        ...userMock,
-        id: 'any_id',
-        created_at: new Date(),
-      }),
-    }
+    userRepo = new PrismaUserRepository()
+    userCreateSpy = jest.spyOn(userRepo, 'create')
+
     sut = new CreateUser.UseCase(userRepo)
+  })
+
+  afterAll(async () => {
+    await prisma.$disconnect()
   })
 
   it('should call userRepo correctly', async () => {
     await sut.handle(userMock)
 
-    expect(userRepo.create).toHaveBeenCalledWith(
+    expect(userCreateSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         id: expect.any(String),
         full_name: userMock.full_name,
-        cpf: userMock.cpf,
+        cpf: new CpfValueObject(userMock.cpf).value,
         email: userMock.email,
         favorite_color: userMock.favorite_color,
         observations: userMock.observations,
         created_at: expect.any(Date),
       }),
     )
-    expect(userRepo.create).toHaveBeenCalledTimes(1)
+    expect(userCreateSpy).toHaveBeenCalledTimes(1)
   })
 
   it('should create a user', async () => {
@@ -56,5 +62,14 @@ describe('CreateUserUseCase Unit Tests', () => {
         created_at: expect.any(Date),
       }),
     )
+
+    const userFromDb = await prisma.user.findUnique({
+      where: { id: user.id },
+    })
+
+    expect(userFromDb).toEqual({
+      ...user,
+      cpf: new CpfValueObject(user.cpf).value,
+    })
   })
 })

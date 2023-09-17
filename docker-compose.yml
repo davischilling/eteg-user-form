@@ -1,6 +1,21 @@
 version: '3.9'
 
 services:
+  # app:
+  #   container_name: api-dev
+  #   image: api-dev
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - .:/usr/src/app
+  #   ports:
+  #     - 3000:3000
+  #   depends_on:
+  #     - api-pg
+  #   networks:
+  #     - app-network
+
   api-pg:
     image: bitnami/postgresql
     container_name: api-pg
@@ -10,6 +25,11 @@ services:
       POSTGRES_DB: pg
     ports:
       - 5432:5432
+    # volumes:
+    #   - ./dbdata:/var/lib/postgres/data:delegated
+    # networks:
+    #   - app-network
+
   api-pg-test:
     image: bitnami/postgresql
     restart: always
@@ -18,5 +38,12 @@ services:
       POSTGRES_USER: docker
       POSTGRES_PASSWORD: docker
       POSTGRES_DB: pg-test
-    ports:
-      - 5433:5432
+#     ports:
+#       - 5433:5432
+#     networks:
+#       - app-network
+# networks:
+#   app-network:
+
+# volumes:
+#   dbdata:

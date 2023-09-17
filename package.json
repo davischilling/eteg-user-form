@@ -4,6 +4,7 @@
   "description": "Eteg - John Doe user form request challenge",
   "main": "index.js",
   "scripts": {
+    "dev": "tsx watch src/server.ts",
     "test": "jest",
     "test:cov": "jest --coverage"
   },
@@ -26,6 +27,7 @@
   "dependencies": {
     "@prisma/client": "^5.2.0",
     "dotenv": "^16.3.1",
+    "fastify": "^4.23.2",
     "uuid": "^9.0.1",
     "zod": "^3.22.2"
   }

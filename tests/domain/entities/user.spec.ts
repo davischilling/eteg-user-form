@@ -34,6 +34,23 @@ describe('User Entity Unit Tests', () => {
     expect(user.observations).toBe(userMock.observations)
   })
 
+  it('should return entity model correctly', () => {
+    const user = new User.Entity(userMock, validator)
+    const model = user.toJSON()
+
+    expect(model).toEqual(
+      expect.objectContaining({
+        id: expect.any(String),
+        full_name: userMock.full_name,
+        cpf: userMock.cpf,
+        email: userMock.email,
+        favorite_color: userMock.favorite_color,
+        observations: userMock.observations,
+        created_at: expect.any(Date),
+      }),
+    )
+  })
+
   it('should call validator correctly', () => {
     const user = new User.Entity(userMock, validator)
     expect(validateSpy).toHaveBeenCalledWith(user, 'User')

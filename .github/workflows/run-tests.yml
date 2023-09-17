@@ -1,6 +1,6 @@
 name: Run Tests
 
-on: [push]
+on: [pull_request]
 
 jobs:
   run-tests:
@@ -10,13 +10,13 @@ jobs:
     services:
       postgres:
         image: bitnami/postgresql
+        ports:
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        ports:
-          - 5432:5432
         env:
           POSTGRESQL_USERNAME: docker
           POSTGRESQL_PASSWORD: docker
@@ -34,7 +34,7 @@ jobs:
       - run: npx prisma migrate dev
       - run: npm run test
         env:
-          NODE_ENV: "test"
+          NODE_ENV: test
           SEQUENTIAL_TESTS: true
           DATABASE_URL: "postgresql://docker:docker@localhost:5432/pg-test?schema=public"
 

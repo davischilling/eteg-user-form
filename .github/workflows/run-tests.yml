@@ -29,5 +29,13 @@ jobs:
       - run: npx prisma migrate dev
       - run: npm run test
         env:
+          NODE_ENV: "test"
+          SEQUENTIAL_TESTS: true
           DATABASE_URL: "postgresql://docker:docker@localhost:5432/pg-test?schema=public"
+          DATABASE_USER: "docker"
+          DATABASE_PASS: "docker"
+          DATABASE_HOST: "localhost"
+          DATABASE_PORT: 5432
+          DATABASE_NAME: "pg-test"
+
       

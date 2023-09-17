@@ -2,7 +2,7 @@ import { ValidationInterface } from '#/domain/contracts'
 import { AbstractEntity } from './abstract-entity'
 
 export namespace User {
-  type FavoriteColor =
+  export type FavoriteColor =
     | 'red'
     | 'orange'
     | 'yellow'
@@ -11,19 +11,25 @@ export namespace User {
     | 'indigo'
     | 'violet'
 
-  export type Model = {
-    id: string
+  export type Props = {
     full_name: string
     cpf: string
     email: string
     favorite_color: FavoriteColor
     observations: string
-    created_at: Date
   }
 
-  export type CreateDto = Omit<Model, 'id' | 'created_at'>
+  export type Model = {
+    id: string
+    created_at: Date
+  } & Props
 
-  export class Entity extends AbstractEntity<CreateDto> {
+  export type CreateDto = {
+    id?: string
+    created_at?: Date
+  } & Props
+
+  export class Entity extends AbstractEntity<CreateDto, Model> {
     constructor(
       props: CreateDto,
       private readonly validator: ValidationInterface<Entity>,

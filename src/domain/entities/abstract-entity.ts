@@ -9,7 +9,7 @@ export type EntityProps<Props> = {
   props: Props
 }
 
-export abstract class AbstractEntity<Props = any> {
+export abstract class AbstractEntity<Props = any, Model = any> {
   readonly id: string
   readonly created_at: Date
   protected readonly props: Props
@@ -26,5 +26,13 @@ export abstract class AbstractEntity<Props = any> {
     if (this.errorNotifier.hasErrors()) {
       throw new InvalidFieldError(this.errorNotifier.getErrors())
     }
+  }
+
+  toJSON(): Model {
+    return {
+      id: this.id,
+      created_at: this.created_at,
+      ...this.props,
+    } as unknown as Model
   }
 }

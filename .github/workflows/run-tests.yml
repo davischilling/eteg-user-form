@@ -11,7 +11,7 @@ jobs:
       postgres:
         image: bitnami/postgresql
         ports:
-          - 5433:5432
+          - 5432:5432
         env:
           POSTGRESQL_USERNAME: docker
           POSTGRESQL_PASSWORD: docker
@@ -29,5 +29,5 @@ jobs:
       - run: npx prisma migrate dev
       - run: npm run test
         env:
-          DATABASE_URL: "postgresql://docker:docker@localhost:5433/pg-test?schema=public"
+          DATABASE_URL: "postgresql://docker:docker@localhost:5432/pg-test?schema=public"
       

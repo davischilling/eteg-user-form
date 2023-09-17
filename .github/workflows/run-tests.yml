@@ -17,6 +17,11 @@ jobs:
           POSTGRESQL_PASSWORD: docker
           POSTGRESQL_DATABASE: pg-test
 
+    env:
+      DATABASE_URL: "postgresql://docker:docker@localhost:5432/pg-test?schema=public"
+      NODE_ENV: test
+      SEQUENTIAL_TESTS: true
+
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -29,9 +34,5 @@ jobs:
       - run: npx prisma migrate dev
       - run: npx prisma db push
       - run: npm run test
-        env:
-          NODE_ENV: test
-          SEQUENTIAL_TESTS: true
-          DATABASE_URL: "postgresql://docker:docker@localhost:5432/pg-test?schema=public"
 
       

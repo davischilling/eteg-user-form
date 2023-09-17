@@ -15,7 +15,7 @@ jobs:
         env:
           POSTGRESQL_USERNAME: docker
           POSTGRESQL_PASSWORD: docker
-          POSTGRESQL_DATABASE: apisolid-test
+          POSTGRESQL_DATABASE: pg-test
 
     steps:
       - uses: actions/checkout@v3
@@ -27,5 +27,5 @@ jobs:
       - run: npm ci
       - run: npm run test
         env:
-          DATABASE_URL: "postgresql://docker:docker@localhost:5433/apisolid-test?schema=public"
+          DATABASE_URL: "postgresql://docker:docker@localhost:5433/pg-test?schema=public"
       

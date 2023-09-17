@@ -25,6 +25,8 @@ jobs:
           cache: 'npm'
       
       - run: npm ci
+      - run: npx prisma generate
+      - run: npx prisma migrate dev
       - run: npm run test
         env:
           DATABASE_URL: "postgresql://docker:docker@localhost:5433/pg-test?schema=public"

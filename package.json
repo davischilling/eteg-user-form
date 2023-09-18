@@ -4,9 +4,12 @@
   "description": "Eteg - John Doe user form request challenge",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "tsx watch src/server.ts",
+    "dev:client": "cd client && npm run dev",
     "test": "jest",
-    "test:cov": "jest --coverage"
+    "test:cov": "jest --coverage",
+    "migrate": "prisma generate && prisma migrate dev"
   },
   "keywords": [],
   "author": "",
@@ -29,6 +32,7 @@
   "dependencies": {
     "@fastify/cors": "^8.3.0",
     "@prisma/client": "^5.2.0",
+    "concurrently": "^8.2.1",
     "dotenv": "^16.3.1",
     "fastify": "^4.23.2",
     "uuid": "^9.0.1",

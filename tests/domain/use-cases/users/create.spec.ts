@@ -1,7 +1,8 @@
+import { UserAlreadyExistsError } from '#/data/errors'
 import { CpfValueObject } from '#/data/value-objects'
 import { User } from '#/domain/entities'
 import { CreateUser, UserRepositoryInterface } from '#/domain/use-cases/users'
-import { prisma } from '#/infra/db/prisma'
+import * as prismaModule from '#/infra/db/prisma'
 import { PrismaUserRepository } from '#/infra/db/repositories'
 
 describe('CreateUserUseCase Integration Tests', () => {
@@ -11,8 +12,8 @@ describe('CreateUserUseCase Integration Tests', () => {
   let userMock: CreateUser.InputDto
 
   beforeEach(async () => {
-    const deleteUser = prisma.user.deleteMany()
-    await prisma.$transaction([deleteUser])
+    const deleteUser = prismaModule.prisma.user.deleteMany()
+    await prismaModule.prisma.$transaction([deleteUser])
 
     userMock = {
       full_name: 'John Doe',
@@ -28,7 +29,7 @@ describe('CreateUserUseCase Integration Tests', () => {
   })
 
   afterAll(async () => {
-    await prisma.$disconnect()
+    await prismaModule.prisma.$disconnect()
   })
 
   it('should call userRepo correctly', async () => {
@@ -51,25 +52,49 @@ describe('CreateUserUseCase Integration Tests', () => {
   it('should create a user', async () => {
     const user = await sut.handle(userMock)
 
-    expect(user).toEqual(
-      expect.objectContaining({
-        id: expect.any(String),
-        full_name: userMock.full_name,
-        cpf: userMock.cpf,
-        email: userMock.email,
-        favorite_color: userMock.favorite_color,
-        observations: userMock.observations,
-        created_at: expect.any(Date),
-      }),
-    )
+    expect(user).toEqual({
+      ...userMock,
+      id: expect.any(String),
+      created_at: expect.any(Date),
+    })
 
-    const userFromDb = await prisma.user.findUnique({
+    const userFromDb = await prismaModule.prisma.user.findUnique({
       where: { id: user.id },
     })
 
     expect(userFromDb).toEqual({
       ...user,
-      cpf: new CpfValueObject(user.cpf).value,
+      cpf: new CpfValueObject(user.cpf).getCpfDigits(),
     })
+  })
+
+  it('should throw if tries to create a user with an already used email', async () => {
+    await sut.handle(userMock)
+
+    await expect(
+      sut.handle({
+        ...userMock,
+        cpf: '111.111.111-11',
+      }),
+    ).rejects.toThrow(new UserAlreadyExistsError())
+  })
+
+  it('should throw if tries to create a user with an already used cpf', async () => {
+    await sut.handle(userMock)
+
+    await expect(
+      sut.handle({
+        ...userMock,
+        email: 'email@test.com',
+      }),
+    ).rejects.toThrow(new UserAlreadyExistsError())
+  })
+
+  it('should rethrow if userRepo throw something different from PrismaClientKnownRequestError', async () => {
+    const otherError = new Error('Some other error')
+    const prismaMock = jest.spyOn(prismaModule.prisma.user, 'create')
+    prismaMock.mockRejectedValueOnce(otherError)
+
+    await expect(sut.handle(userMock)).rejects.toThrow(otherError)
   })
 })

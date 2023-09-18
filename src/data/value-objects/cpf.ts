@@ -1,13 +1,17 @@
 export class CpfValueObject {
-  readonly value: string
-  constructor(value?: string) {
-    // Remove all non-numeric characters
-    this.value = value ? value.replace(/\D/g, '') : ''
-  }
+  constructor(readonly value: string) {}
 
   static isValidNumericCPF(cpf: string): boolean {
-    // Check if the string contains only numeric digits
-    return /^[0-9]+$/.test(cpf)
+    // Check if the string has format 000.000.000-00
+    const cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/
+    if (!cpfRegex.test(cpf)) {
+      return false
+    }
+    return true
+  }
+
+  getCpfDigits(): string {
+    return this.value.replace(/\D/g, '')
   }
 
   formatCpf(): string {

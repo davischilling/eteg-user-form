@@ -10,7 +10,7 @@ import SelectInput from '../../../@shared/components/SelectInput';
 import { CreateUserValidationContext } from '../validations/create';
 
 type FormProps = {
-  handleSubmit: (user: User) => Promise<void>;
+  handleSubmit: (user: User, cb: () => void) => Promise<void>;
 };
 
 export default function Form({ handleSubmit: onSubmit }: FormProps) {
@@ -111,8 +111,7 @@ export default function Form({ handleSubmit: onSubmit }: FormProps) {
               variant="contained"
               color="secondary"
               onClick={handleSubmit((data: User) => {
-                onSubmit(data);
-                reset();
+                onSubmit(data, reset);
               })}
             >
               Salvar

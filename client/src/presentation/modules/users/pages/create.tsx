@@ -15,7 +15,7 @@ import {
 export function CreateUserPage() {
   const { enqueueSnackbar } = useSnackbar();
 
-  const onSubmit = async (user: User) => {
+  const onSubmit = async (user: User, cb: () => void) => {
     const fmtCpf = user.cpf.slice(0, 14);
     try {
       await api.post('/users', {
@@ -23,6 +23,7 @@ export function CreateUserPage() {
         cpf: fmtCpf,
       });
       enqueueSnackbar('Usuário criado com sucesso', { variant: 'success' });
+      cb();
     } catch (error: any) {
       if (error instanceof InvalidFieldError) {
         enqueueSnackbar('CPF ou E-mail já utilizado', { variant: 'error' });

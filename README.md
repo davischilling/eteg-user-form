@@ -2,7 +2,7 @@
 
 ## Setup
 - Instalar as dependências do server com `npm install`
-- Instalar as dependências do client com `cd client && npm install`
+- Instalar as dependências do client com `cd client && npm install && cd ..`
 - Levantar o banco de dados com o comando `docker-compose up -d`
 - Executar o comando `npm run migrate` para criar as tabelas no banco de dados
 - Executar o comando `npm run dev` para iniciar a aplicação

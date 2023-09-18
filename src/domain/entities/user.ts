@@ -1,4 +1,3 @@
-import { CpfValueObject } from '#/data/value-objects'
 import { ValidationInterface } from '#/domain/contracts'
 import { AbstractEntity } from './abstract-entity'
 
